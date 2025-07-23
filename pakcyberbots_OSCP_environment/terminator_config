@@ -1,0 +1,192 @@
+[global_config]
+  window_state = maximise
+  ask_before_closing = always
+[keybindings]
+  split_horiz = <Primary><Shift>j
+  split_vert = <Primary><Shift>l
+  next_profile = <Primary>n
+[profiles]
+  [[default]]
+    background_darkness = 0.95
+    background_type = transparent
+    foreground_color = "#ffffff"
+    scrollback_lines = 10000
+    palette = "#63452c:#d41919:#5ebdab:#fea44c:#367bf0:#9755b3:#49aee6:#e6e6e6:#198388:#ec0101:#47d4b9:#ff8a18:#277fff:#962ac3:#05a1f7:#ffffff"
+    use_theme_colors = True
+  [[Report Writing]]
+    background_color = "#ffffff"
+    cursor_fg_color = "#000000"
+    cursor_bg_color = "#ffffff"
+    cursor_color_default = False
+    foreground_color = "#000000"
+    scrollback_lines = 10000
+    palette = "#000000:#e66100:#00aa00:#aa5500:#0000aa:#aa00aa:#c01c28:#77767b:#555555:#ffa348:#26a269:#e5a50a:#5555ff:#ff55ff:#f66151:#ffffff"
+    bold_is_bright = True
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = GlowyDark
+  [[Pentesting]]
+    [[[child0]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 0:35
+      maximised = True
+      fullscreen = False
+      title = kali@kali: ~
+      last_active_term = ab20db86-fd87-489f-a648-209eb8c297c2
+      last_active_window = False
+    [[[child1]]]
+      type = HPaned
+      parent = child0
+      order = 0
+      position = 840
+      ratio = 0.4997025580011898
+    [[[terminal2]]]
+      type = Terminal
+      parent = child1
+      order = 0
+      profile = default
+      uuid = 87c7737b-ea51-46e3-b7a5-911d35d71632
+      directory = ""
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+    [[[child3]]]
+      type = VPaned
+      parent = child1
+      order = 1
+      position = 446
+      ratio = 0.5
+    [[[terminal4]]]
+      type = Terminal
+      parent = child3
+      order = 0
+      profile = default
+      uuid = 811c8210-6264-4c9f-8ec5-60ed39306838
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+      directory = ""
+    [[[terminal5]]]
+      type = Terminal
+      parent = child3
+      order = 1
+      profile = default
+      uuid = ab20db86-fd87-489f-a648-209eb8c297c2
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+      directory = ""
+    [[[child6]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 0:35
+      maximised = True
+      fullscreen = False
+      title = kali@kali: ~
+      last_active_term = 7862a705-57c5-4e8f-a4c4-68a6eacdd9eb
+      last_active_window = False
+    [[[child7]]]
+      type = VPaned
+      parent = child6
+      order = 0
+      position = 446
+      ratio = 0.5
+    [[[child8]]]
+      type = HPaned
+      parent = child7
+      order = 0
+      position = 525
+      ratio = 0.3123140987507436
+    [[[terminal9]]]
+      type = Terminal
+      parent = child8
+      order = 0
+      profile = default
+      uuid = 8201be27-2adb-4d7e-929c-316fdd3e1a3c
+      directory = ""
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+    [[[terminal10]]]
+      type = Terminal
+      parent = child8
+      order = 1
+      profile = default
+      uuid = 7862a705-57c5-4e8f-a4c4-68a6eacdd9eb
+      directory = ""
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+    [[[terminal11]]]
+      type = Terminal
+      parent = child7
+      order = 1
+      profile = default
+      uuid = f80d3871-1b36-457d-81f4-a62973f63f84
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+      directory = ""
+    [[[child12]]]
+      type = Window
+      parent = ""
+      order = 0
+      position = 0:35
+      maximised = False
+      fullscreen = False
+      size = 1034, 753
+      title = "BACKGROUND TASKS (e.g. HTTP Server, Ligolo-ng, burpsuite, etc.)"
+      last_active_term = f92c6224-5fe6-4931-819b-1fdd3da4385d
+      last_active_window = True
+    [[[child13]]]
+      type = VPaned
+      parent = child12
+      order = 0
+      position = 224
+      ratio = 0.5
+    [[[child14]]]
+      type = HPaned
+      parent = child13
+      order = 0
+      position = 364
+      ratio = 0.4993141289437586
+    [[[terminal15]]]
+      type = Terminal
+      parent = child14
+      order = 0
+      profile = default
+      uuid = f92c6224-5fe6-4931-819b-1fdd3da4385d
+      title = "HTTP Server"
+      directory = ""
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+    [[[terminal16]]]
+      type = Terminal
+      parent = child14
+      order = 1
+      profile = default
+      uuid = ec304a3a-3a57-45ac-9224-35ba6b30c8e2
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+      directory = ""
+      title = "Ligolo-ng / Chisel"
+    [[[child17]]]
+      type = HPaned
+      parent = child13
+      order = 1
+      position = 364
+      ratio = 0.4993141289437586
+    [[[terminal18]]]
+      type = Terminal
+      parent = child17
+      order = 0
+      profile = default
+      uuid = 25d535a1-8aea-4d36-ae09-d4aab9537e7c
+      directory = ""
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+      title = "Burpsuite / Any Application"
+    [[[terminal19]]]
+      type = Terminal
+      parent = child17
+      order = 1
+      profile = default
+      uuid = 351f4b2a-de85-4284-8723-ef9879229c0e
+      command = source ~/.my_penenv_settings;env -u UNDER_SCRIPT zsh
+      directory = ""
+      title = "Extras"
+[plugins]

@@ -1,0 +1,181 @@
+#!/bin/bash
+
+set -e
+
+# Check arguments
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+  echo "Usage: $0 <filename.md> [-z] | -i"
+  echo "  - Provide a Markdown file to convert to PDF"
+  echo "  - Use -z with the filename to also zip the resulting PDF using 7z"
+  echo "  - Use -i to install all required dependencies"
+  exit 1
+fi
+
+# Handle install flag
+if [ "$1" = "-i" ]; then
+	# Checking requried packages availability
+	echo "[*] Checking for xelatex..."
+	if ! command -v xelatex &>/dev/null; then
+	  echo "[!] xelatex not found."
+	  install_needed=true
+	else
+	  echo "[✓] xelatex is already installed."
+	fi
+	
+	echo "[*] Checking for pandoc..."
+	if ! command -v pandoc &>/dev/null; then
+	  echo "[!] pandoc not found."
+	  install_needed=true
+	else
+	  echo "[✓] pandoc is already installed."
+	fi
+	if [ "$install_needed" = true ]; then
+		echo "[*] Installing required packages..."
+		sudo apt install texlive-xetex texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra pandoc p7zip-full
+		echo "[✓] Installation completed."
+	else
+	  echo "[✓] All dependencies are already satisfied."
+	fi
+	
+	
+	EISVOGEL_TEMPLATE="/usr/share/pandoc/data/templates/eisvogel.latex"
+	echo "[*] Checking for Eisvogel template..."
+	
+	if [ -f "$EISVOGEL_TEMPLATE" ]; then
+	  echo "[✓] Eisvogel template found at $EISVOGEL_TEMPLATE"
+	else
+	  echo "[!] Eisvogel template not found!"
+	  echo "[*] Running fallback installation steps..."
+	  wget https://github.com/Wandmalfarbe/pandoc-latex-template/releases/download/v3.2.0/Eisvogel.zip
+	  unzip Eisvogel.zip 
+	  mv Eisvogel-3.2.0/eisvogel.latex $EISVOGEL_TEMPLATE
+	  rm -rf Eisvogel-3.2.0 Eisvogel.zip
+	fi
+else
+	
+	INPUT="$1"
+	
+	# 📎 Optional: validate file existence
+	if [ ! -f "$INPUT" ]; then
+	  echo "Error: File '$INPUT' not found."
+	  exit 1
+	fi
+	
+	# Converting image format for pandoc
+	file="$1"
+	
+	if [ ! -f "$file" ]; then
+	  echo "Error: File '$file' not found."
+	  exit 1
+	fi
+	
+	echo "[*] Processing $file to format images..."
+	
+	awk '
+	{
+	  # Match Obsidian-style image embed: ![[image.png]]
+	  if (match($0, /!\[\[([^]]+)\]\]/, arr)) {
+	    image = arr[1]
+	    print "\\begin{figure}[H]"
+	    print "  \\centering"
+	    print "  \\fbox{\\includegraphics[width=1\\linewidth]{" image "}}"
+	    print "  \\caption{}"
+	    print "\\end{figure}"
+	  } else {
+	    print
+	  }
+	}
+	' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+	
+	awk '
+	/code-block-font-size: \\scriptsize/ {
+	  print;
+	  getline nextLine
+	  if (nextLine ~ /^header-includes:/) {
+	    print nextLine
+	    next
+	  }
+	
+	  # Insert header-includes block only if not already present
+	  print "header-includes:";
+	  print "  - \\usepackage{graphicx}";
+	  print "  - \\usepackage{float}";
+	  print "  - \\usepackage{caption}";
+	  print "  - \\captionsetup[figure]{format=plain, justification=centering}";
+	  print "  - \\usepackage{listings}";
+	  print "  - \\usepackage{xcolor}";
+	  print "  - \\usepackage{inconsolata}";
+	  print "  - \\lstset{";
+	  print "      basicstyle=\\ttfamily\\scriptsize,";
+	  print "      backgroundcolor=\\color{gray!5},";
+	  print "      frame=single,";
+	  print "      rulecolor=\\color{gray},";
+	  print "      breaklines=false,";
+	  print "      breakatwhitespace=false,";
+	  print "      showstringspaces=false,";
+	  print "      keepspaces=true,";
+	  print "      columns=fullflexible,";
+	  print "      tabsize=2,";
+	  print "      numbers=left,";
+	  print "      numberstyle=\\tiny\\color{gray},";
+	  print "      captionpos=b,";
+	  print "      keywordstyle=\\color{blue},";
+	  print "      commentstyle=\\color{gray!70}\\itshape,";
+	  print "      stringstyle=\\color{teal}";
+	  print "    }";
+	  print "output:";
+	  print "  pdf_document:";
+	  print "    pdf_engine: xelatex";
+	  print nextLine
+	  next
+	}
+	{ print }
+	' "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+
+	
+	echo "[✓] Updated image formats: $file"
+	
+	
+	
+	BASENAME="${INPUT%.*}"
+	
+	# Generating report
+	echo '[+] Generating report...'
+	pandoc "$INPUT" -o "$BASENAME.pdf" \
+	  --from markdown+yaml_metadata_block+raw_html \
+	  --template eisvogel \
+	  --table-of-contents \
+	  --toc-depth 6 \
+	  --number-sections \
+	  --top-level-division=chapter \
+	  --highlight-style tango \
+	  --resource-path=.:img:images:assets --pdf-engine=xelatex --listings
+	
+	echo "[+] PDF generated at $BASENAME.pdf"
+
+	# Handle -z option
+	if [ "$2" == "-z" ]; then
+	  GREEN="\e[32m"
+	RED="\e[31m"
+	YELLOW="\e[33m"
+	NC="\e[0m" # No Color
+	  if ! command -v 7z &> /dev/null; then
+	    echo "[*] 7z not found. Installing..."
+	    sudo apt install -y p7zip-full
+	  fi
+	  
+	  OSID=$(grep 'OSID:' "$INPUT" | sed -nE 's/.*(OS-[0-9]+).*/\1/p')
+	  Offsec_naming="OSCP-$OSID-Exam-Report"
+	  
+		echo -e "[+] Renaming ${GREEN}$BASENAME.pdf${NC} to ${GREEN}$Offsec_naming.pdf${NC}..."
+		mv "$BASENAME.pdf" "$Offsec_naming.pdf" || { echo -e "${RED}[-] Failed to rename PDF file.${NC}"; exit 1; }
+
+		echo -e "[+] Zipping ${GREEN}$Offsec_naming.pdf${NC} into ${GREEN}$Offsec_naming.zip${NC}..."
+		7z a "$Offsec_naming.7z" "$Offsec_naming.pdf" > /dev/null
+		echo -e "[+] Zipped file created: ${GREEN}$Offsec_naming.7z${NC}"
+		
+		echo -e "[+] Generating MD5 hash for ${GREEN}$Offsec_naming.7z${NC}..."
+		md5sum "$Offsec_naming.7z"
+	fi
+fi
+

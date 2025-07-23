@@ -1,0 +1,41 @@
+#!/bin/bash
+
+ZSHRC="$HOME/.myterm_settings"
+MARKER="# Helper script by @sechurity"
+
+# The script block to be toggled
+read -r -d '' SCRIPT_BLOCK <<'EOF'
+# Helper script by @sechurity
+# Create a log directory, a log file and start logging
+if [ -z "${UNDER_SCRIPT}" ]; then
+    logdir=${HOME}/logs
+    logfile=${logdir}/$(date +%F.%H-%M-%S).$$.log
+
+    mkdir -p ${logdir}
+    export UNDER_SCRIPT=${logfile}
+    echo "The terminal output is saving to $logfile"
+    script -f -q ${logfile}
+
+    exit
+fi
+EOF
+
+# Check if the marker line exists
+if grep -Fxq "$MARKER" "$ZSHRC"; then
+    # Remove the block
+    TMP_FILE=$(mktemp)
+    awk -v marker="$MARKER" '
+        BEGIN {skip=0}
+        {
+            if ($0 == marker) {skip=1}
+            if (!skip) print
+            if (skip && $0 ~ /^fi$/) {skip=0; next}
+        }
+    ' "$ZSHRC" > "$TMP_FILE"
+    mv "$TMP_FILE" "$ZSHRC"
+    echo "✅ Linux terminal logging disabled"
+else
+    # Append the block at the end
+    echo -e "$SCRIPT_BLOCK" >> "$ZSHRC"
+    echo "✅ Linux terminal logging enabled"
+fi
