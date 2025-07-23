@@ -3,7 +3,7 @@
 I used this cheat sheet inside Obsidian due to its powerful customization options. You can see how it looks in Obsidian in the GIF below.
 
 <div align="center">
-    <img src=assets/obsidian.gif>
+    <img src="https://pakcyberbot.com/OSCP-Notes-and-Environment/assets/obsidian.gif">
 </div>
 
 You can also download the Markdown file and use it in your own Obsidian setup. I’ll be publishing my full Obsidian vault with all configurations soon, so follow me to stay updated.
