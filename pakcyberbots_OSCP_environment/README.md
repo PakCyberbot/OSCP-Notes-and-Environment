@@ -28,7 +28,7 @@ A powerful and fully automated OSCP-style penetration testing environment initia
 
 * **BloodHound Setup:**
 
-  * Use `bloodhound-docker start/stop` to quickly deploy BloodHound with Docker.
+  * Use `bloodhound-docker start/stop` to quickly deploy BloodHound with Docker. **Docker is required, it should be installed in your system before installing this environment**
 
 * **Obsidian Template Integration:**
 
