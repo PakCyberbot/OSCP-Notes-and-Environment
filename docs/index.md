@@ -79,10 +79,18 @@ You can match this setup in just seconds: download and run **`OSCP_envsetup.sh`*
 - [TryHackMe AD Exploitation Module](https://tryhackme.com/module/hacking-active-directory)
 - [exploit notes hdks](https://exploit-notes.hdks.org/)
 
+### Recommended Labs
+
+- [Linux PrivEsc](https://tryhackme.com/room/linprivesc)
+- [Tiberius Linux PrivEsc](https://tryhackme.com/room/linuxprivesc)
+- [TCM Security Linux PrivEsc](https://tryhackme.com/room/linuxprivescarena)
+- [Windows PrivEsc](https://tryhackme.com/room/winprivesc)
+- [Tiberius Windows PrivEsc](https://tryhackme.com/room/windows10privesc)
+- [TCM Security Windows PrivEsc](https://tryhackme.com/room/windowsprivescarena)
 
 ## My Social Media
 
-You can follow me on the below social media for mroe informative future updates
+You can follow me on the below social media for more informative future updates
 
 🔗 Connect with me:
 
@@ -96,4 +104,5 @@ You can follow me on the below social media for mroe informative future updates
 
 !!! tip ""
     ☕ You can support my work here: [https://buymeacoffee.com/pakcyberbot](https://buymeacoffee.com/pakcyberbot)
+
 
