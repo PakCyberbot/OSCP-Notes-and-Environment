@@ -1,0 +1,84 @@
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=/opt/bin:$GOPATH/bin:$GOROOT/bin:$PATH:/home/anon05/.local/bin
+
+alias rustscan='docker run -it --rm --name rustscan rustscan/rustscan'
+alias cleanDownloads="find ~/Downloads -not \( -name HTB.ovpn -or -name THM.ovpn \) -not -path '/home/kali/Downloads' -exec rm -rf '{}' ';'"
+
+
+getFromMainMachine(){
+	sudo cp -R /media/SharedVM/$1 $PWD/$1 && sudo chown $USER: -R $PWD/$1
+}
+
+sendToMainMachin(){
+	sudo cp -R $1 /media/SharedVM/$1
+}
+
+My-evasion-tools(){
+	tree -L 1 /opt/myarsenal/Evasion-Tools
+	echo "/opt/myarsenal/Evasion-Tools" | xclip -selection clipboard
+	echo "**** PATH pasted to CLIPBOARD ****"
+}
+bloodhound-docker() {
+    local compose_dir="/opt/myarsenal/bloodhounddocker"
+    local compose_file="$compose_dir/docker-compose.yml"
+    local remove_volumes=false
+
+    if [[ ! -f "$compose_file" ]]; then
+        echo "[!] docker-compose.yml not found in $compose_dir"
+        echo "creating compose file in that $compose_dir"
+        mkdir -p $compose_dir
+        wget -O "$compose_dir/docker-compose.yml" https://raw.githubusercontent.com/SpecterOps/bloodhound/main/examples/docker-compose/docker-compose.yml 
+        echo "run again, to start the container"
+        return 1
+    fi
+
+    case "$1" in
+        start)
+            if docker-compose -f "$compose_file" ps | grep -q "Up"; then
+                echo "[i] BloodHound containers already running."
+            else
+                echo "[+] Starting BloodHound containers..."
+                docker-compose -f "$compose_file" up -d
+		docker logs bloodhounddocker-bloodhound-1 | grep "Initial Password Set To"
+            fi
+            ;;
+        stop)
+            if docker-compose -f "$compose_file" ps | grep -q "Up"; then
+                shift
+                if [[ "$1" == "-v" ]]; then
+                    remove_volumes=true
+                fi
+
+                if [[ "$remove_volumes" == true ]]; then
+					echo "[-] Stopping BloodHound and removing volumes..."
+					docker-compose -f "$compose_file" down -v
+                else
+                    echo "[-] Stopping BloodHound containers..."
+                    docker-compose -f "$compose_file" down
+                fi
+            else
+                echo "[i] BloodHound containers are not running."
+            fi
+            ;;
+        *)
+            echo "Usage: bloodhound-docker {start|stop [-v]}"
+            ;;
+    esac
+}
+
+
+
+# Helper script by @sechurity
+# Create a log directory, a log file and start logging
+if [ -z "${UNDER_SCRIPT}" ]; then
+    logdir=${HOME}/logs
+    logfile=${logdir}/$(date +%F.%H-%M-%S).$$.log
+
+    mkdir -p ${logdir}
+    export UNDER_SCRIPT=${logfile}
+    echo "The terminal output is saving to $logfile"
+    script -f -q ${logfile}
+
+    exit
+fi
